@@ -1,0 +1,149 @@
+QWidget {
+  background-color: #f2f2f2;
+  color: #333333;
+}
+
+QMenuBar {
+  background-color: #fff;
+  margin: 0px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+QMenuBar::item {
+  background-color: #fff;
+  color: #333333;
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+
+QMenuBar::item:selected {
+  background-color: #2d9cdb;
+  color: #fff;
+}
+
+QMenuBar::item:pressed {
+  background-color: #2f80ed;
+}
+
+QMenu {
+  background-color: #fff;
+  color: #333333;
+  padding: 2px;
+}
+
+QMenu::separator {
+  color: #bdbdbd;
+}
+
+QMenu::item {
+  padding: 5px 25px;
+  border: 1px;
+  border-radius: 5px;
+}
+
+QMenu::item:disabled {
+  color: #828282;
+  background-color: #bdbdbd;
+  border-radius: 0;
+}
+
+QMenu::item:selected {
+  background-color: #2f80ed;
+  color: #fff;
+}
+
+QMenu::item:pressed {
+  background-color: #2f80ed;
+}
+
+QGroupBox {
+  color: #333333;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+QGroupBox > * {
+  color: #333333;
+  background-color: transparent;
+}
+
+QSlider::groove:horizontal {
+  border: none;
+  height: 2px;
+  background-color: #bdbdbd;
+  margin: 4px;
+}
+
+QSlider::handle:horizontal {
+  background-color: #2d9cdb;
+  border: none;
+  width: 16px;
+  border-radius: 8px;
+  margin-top: -7px;
+  margin-bottom: -7px;
+}
+
+QSlider::handle:hover {
+  background-color: #2f80ed;
+}
+
+QSlider::handle:horizontal:disabled {
+  background-color: #828282;
+}
+
+QPushButton {
+  border: 1px solid #2d9cdb;
+  padding: 4px;
+  border-radius: 2px;
+  background-color: transparent;
+  color: #333333;
+}
+
+QPushButton:hover {
+  color: #fff;
+  background-color: #2f80ed;
+}
+
+QPushButton:disabled {
+  color: #828282;
+  background-color: #bdbdbd;
+  border: none;
+}
+
+QListWidget {
+  border: none;
+  background-color: #e0e0e0;
+}
+
+QListWidget::item {
+  border: none;
+  border-radius: 2px;
+  background-color: transparent;
+  color: #333333;
+}
+
+QListWidget::item:hover {
+  color: #fff;
+  background-color: #2d9cdb;
+}
+
+QListWidget::item:selected {
+  color: #fff;
+  background-color: #2f80ed;
+}
+
+QLabel {
+  border: none;
+  border-radius: 5px;
+  background-color: #e0e0e0;
+}
+
+QMessageBox QLabel {
+  background-color: transparent;
+}
+
+QMessageBox QPushButton {
+  padding: 5px 20px;
+}
