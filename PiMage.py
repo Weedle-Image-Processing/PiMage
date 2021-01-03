@@ -5,6 +5,7 @@ from PyQt5.QtGui import QPixmap, QImage
 from GUI import Ui_PiMage
 from effects_filters import EffectsFilters
 from image_enhancement import ImageEnhancement
+from basic_operations import BasicOperations
 import cv2
 import sys
 import os
@@ -35,12 +36,30 @@ class App(QtWidgets.QMainWindow):
         self.ui.contrastSlider.valueChanged.connect(self.slider_events)
         self.ui.brightnessSlider.valueChanged.connect(self.slider_events)
 
+        self.ui.actionVertical.triggered.connect(self.flipVerticalButton_click)
+        self.ui.actionHorizontal.triggered.connect(self.flipHorizontalButton_click)
+        self.ui.actionVertical_Horizontal.triggered.connect(self.flipVertHorButton_click)
+
+        self.ui.action90.triggered.connect(self.rotate90Button_click)
+        self.ui.action180.triggered.connect(self.rotate180Button_click)
+        self.ui.action270.triggered.connect(self.rotate270Button_click)
+
+        self.ui.actionResize.triggered.connect(self.resizeButton_click)
+
+        #self.ui.histogramNormalButton.clicked.connect(self.histogram_click)
+
     def enable_disable_buttons(self):
         if not self.image_exist:
             self.ui.actionCrop.setDisabled(True)
             self.ui.actionResize.setDisabled(True)
-            self.ui.actionRotate.setDisabled(True)
-            self.ui.actionFlip.setDisabled(True)
+            #self.ui.actionRotate.setDisabled(True)
+            self.ui.action90.setDisabled(True)
+            self.ui.action180.setDisabled(True)
+            self.ui.action270.setDisabled(True)
+            #self.ui.actionFlip.setDisabled(True)
+            self.ui.actionVertical.setDisabled(True)
+            self.ui.actionHorizontal.setDisabled(True)
+            self.ui.actionVertical_Horizontal.setDisabled(True)
             self.ui.applyButton.setDisabled(True)
             self.ui.revertButton.setDisabled(True)
             self.ui.brightnessSlider.setDisabled(True)
@@ -51,8 +70,14 @@ class App(QtWidgets.QMainWindow):
         else:
             self.ui.actionCrop.setDisabled(False)
             self.ui.actionResize.setDisabled(False)
-            self.ui.actionRotate.setDisabled(False)
-            self.ui.actionFlip.setDisabled(False)
+            #self.ui.actionRotate.setDisabled(False)
+            self.ui.action90.setDisabled(False)
+            self.ui.action180.setDisabled(False)
+            self.ui.action270.setDisabled(False)
+            #self.ui.actionFlip.setDisabled(False)
+            self.ui.actionVertical.setDisabled(False)
+            self.ui.actionHorizontal.setDisabled(False)
+            self.ui.actionVertical_Horizontal.setDisabled(False)
             self.ui.applyButton.setDisabled(False)
             self.ui.revertButton.setDisabled(False)
             self.ui.brightnessSlider.setDisabled(False)
@@ -104,7 +129,7 @@ class App(QtWidgets.QMainWindow):
         self.image = cv2.imread(self.im_path)
         self.ui.listWidget.clear()
 
-        if path.split(".")[-1] not in ["png", "jpg"]:
+        if path.split(".")[-1] not in ["png", "jpg", "PNG", "JPG"]:
             self.error_message("Unsupported File Error",
                                "Unsupported file, file must be .jpg or .png")
         else:
@@ -219,6 +244,112 @@ class App(QtWidgets.QMainWindow):
         self.image = adjusted_image
         piximage = self.convert_to_pixmap(adjusted_image, True)
         self.ui.imageLabel.setPixmap(piximage)
+
+    def flipVerticalButton_click(self):
+        if self.image_exist:
+            self.basic_operations = BasicOperations(self.image)
+            self.new_image = self.basic_operations.flip_image_vertical()
+            h, w, c = self.new_image.shape
+            qimage = QImage(self.new_image.data, w, h,
+                            c*w, QImage.Format_RGB888)
+            w, h = self.scale_image(qimage.width(), qimage.height())
+            qimage = qimage.scaled(int(w), int(h))
+            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
+
+
+    def flipHorizontalButton_click(self):
+        if self.image_exist:
+            self.basic_operations = BasicOperations(self.image)
+            self.new_image = self.basic_operations.flip_image_horizontal()
+            h, w, c = self.new_image.shape
+            qimage = QImage(self.new_image.data, w, h,
+                            c*w, QImage.Format_RGB888)
+            w, h = self.scale_image(qimage.width(), qimage.height())
+            qimage = qimage.scaled(int(w), int(h))
+            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
+
+    def flipVertHorButton_click(self):
+        if self.image_exist:
+            self.basic_operations = BasicOperations(self.image)
+            self.new_image = self.basic_operations.flip_image_horizontal_vertical()
+            h, w, c = self.new_image.shape
+            qimage = QImage(self.new_image.data, w, h,
+                            c*w, QImage.Format_RGB888)
+            w, h = self.scale_image(qimage.width(), qimage.height())
+            qimage = qimage.scaled(int(w), int(h))
+            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
+
+
+    def rotate90Button_click(self):
+        if self.image_exist:
+            self.basic_operations = BasicOperations(self.image)
+            self.new_image = self.basic_operations.rotate_image_90()
+            h, w, c = self.new_image.shape
+            qimage = QImage(self.new_image.data, w, h,
+                            c * w, QImage.Format_RGB888)
+            w, h = self.scale_image(qimage.width(), qimage.height())
+            qimage = qimage.scaled(int(w), int(h))
+            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
+
+    def rotate180Button_click(self):
+        if self.image_exist:
+            self.basic_operations = BasicOperations(self.image)
+            self.new_image = self.basic_operations.rotate_image_180()
+            h, w, c = self.new_image.shape
+            qimage = QImage(self.new_image.data, w, h,
+                            c * w, QImage.Format_RGB888)
+            w, h = self.scale_image(qimage.width(), qimage.height())
+            qimage = qimage.scaled(int(w), int(h))
+            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
+
+    def rotate270Button_click(self):
+        if self.image_exist:
+            self.basic_operations = BasicOperations(self.image)
+            self.new_image = self.basic_operations.rotate_image_270()
+            h, w, c = self.new_image.shape
+            qimage = QImage(self.new_image.data, w, h,
+                            c * w, QImage.Format_RGB888)
+            w, h = self.scale_image(qimage.width(), qimage.height())
+            qimage = qimage.scaled(int(w), int(h))
+            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
+
+    def resizeButton_click(self):
+        if self.image_exist:
+            self.basic_operations = BasicOperations(self.image)
+            self.resized = self.basic_operations.resize_image()
+            h, w, c = self.resized.shape
+            qimage = QImage(self.resized.data, w, h,
+                            c * w, QImage.Format_RGB888)
+            w, h = self.scale_image(qimage.width(), qimage.height())
+            qimage = qimage.scaled(int(w), int(h))
+            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
+
+    #def histogram_click(self):
+        #if self.image_exist:
+
+        #else:
+            #self.error_message("No Image Found", "Try opening an image!")
 
 
 if __name__ == "__main__":
