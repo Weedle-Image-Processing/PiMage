@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QSizePolicy
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage, QIntValidator
 from GUI import Ui_PiMage
 from effects_filters import EffectsFilters
 from image_enhancement import ImageEnhancement
@@ -16,13 +16,16 @@ class App(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_PiMage()
-        self.setFixedSize(982, 824)
+        self.setFixedSize(982, 839)
         self.ui.setupUi(self)
 
         self.image_exist = False
 
         self.ui.listWidget.setSpacing(5)
         self.enable_disable_buttons()
+        self.ui.resizeGroupBox.setVisible(False)
+        self.ui.widthLineEdit.setValidator(QIntValidator())
+        self.ui.heightLineEdit.setValidator(QIntValidator())
 
         #--- connections ---#
         self.ui.actionOpen.triggered.connect(self.open_image)
@@ -31,60 +34,56 @@ class App(QtWidgets.QMainWindow):
         self.ui.actionRemove_Image.triggered.connect(self.remove_image)
         self.ui.actionQuit.triggered.connect(self.quit_app)
         self.ui.applyButton.clicked.connect(self.applyButton_clicked)
+        self.ui.applyManuelButton.clicked.connect(
+            self.applyManuelEnhancement_clicked)
         self.ui.revertButton.clicked.connect(self.revertButton_click)
         self.ui.inverseButton.clicked.connect(self.invertButton_click)
         self.ui.contrastSlider.valueChanged.connect(self.slider_events)
         self.ui.brightnessSlider.valueChanged.connect(self.slider_events)
 
         self.ui.actionVertical.triggered.connect(self.flipVerticalButton_click)
-        self.ui.actionHorizontal.triggered.connect(self.flipHorizontalButton_click)
-        self.ui.actionVertical_Horizontal.triggered.connect(self.flipVertHorButton_click)
+        self.ui.actionHorizontal.triggered.connect(
+            self.flipHorizontalButton_click)
+        self.ui.actionVertical_Horizontal.triggered.connect(
+            self.flipVertHorButton_click)
 
         self.ui.action90.triggered.connect(self.rotate90Button_click)
         self.ui.action180.triggered.connect(self.rotate180Button_click)
         self.ui.action270.triggered.connect(self.rotate270Button_click)
 
         self.ui.actionResize.triggered.connect(self.resizeButton_click)
+        self.ui.resizeOkButton.clicked.connect(self.resizeOk_click)
+        self.ui.resizeCancelButton.clicked.connect(self.resizeCancel_click)
 
-        #self.ui.histogramNormalButton.clicked.connect(self.histogram_click)
+        # self.ui.histogramNormalButton.clicked.connect(self.histogram_click)
 
     def enable_disable_buttons(self):
         if not self.image_exist:
             self.ui.actionCrop.setDisabled(True)
             self.ui.actionResize.setDisabled(True)
-            #self.ui.actionRotate.setDisabled(True)
+            # self.ui.actionRotate.setDisabled(True)
             self.ui.action90.setDisabled(True)
             self.ui.action180.setDisabled(True)
             self.ui.action270.setDisabled(True)
-            #self.ui.actionFlip.setDisabled(True)
+            # self.ui.actionFlip.setDisabled(True)
             self.ui.actionVertical.setDisabled(True)
             self.ui.actionHorizontal.setDisabled(True)
             self.ui.actionVertical_Horizontal.setDisabled(True)
-            self.ui.applyButton.setDisabled(True)
-            self.ui.revertButton.setDisabled(True)
-            self.ui.brightnessSlider.setDisabled(True)
-            self.ui.contrastSlider.setDisabled(True)
-            self.ui.inverseButton.setDisabled(True)
-            self.ui.histogramNormalButton.setDisabled(True)
-            self.ui.contrastEnhancementButton.setDisabled(True)
+            self.ui.rightToolsGroupBox.setDisabled(True)
+            self.ui.listWidget.setDisabled(True)
         else:
             self.ui.actionCrop.setDisabled(False)
             self.ui.actionResize.setDisabled(False)
-            #self.ui.actionRotate.setDisabled(False)
+            # self.ui.actionRotate.setDisabled(False)
             self.ui.action90.setDisabled(False)
             self.ui.action180.setDisabled(False)
             self.ui.action270.setDisabled(False)
-            #self.ui.actionFlip.setDisabled(False)
+            # self.ui.actionFlip.setDisabled(False)
             self.ui.actionVertical.setDisabled(False)
             self.ui.actionHorizontal.setDisabled(False)
             self.ui.actionVertical_Horizontal.setDisabled(False)
-            self.ui.applyButton.setDisabled(False)
-            self.ui.revertButton.setDisabled(False)
-            self.ui.brightnessSlider.setDisabled(False)
-            self.ui.contrastSlider.setDisabled(False)
-            self.ui.inverseButton.setDisabled(False)
-            self.ui.histogramNormalButton.setDisabled(False)
-            self.ui.contrastEnhancementButton.setDisabled(False)
+            self.ui.rightToolsGroupBox.setDisabled(False)
+            self.ui.listWidget.setDisabled(False)
 
     def set_default_sliders(self):
         self.ui.brightnessSlider.setValue(0)
@@ -128,6 +127,8 @@ class App(QtWidgets.QMainWindow):
         # self.image will be the last configurated image
         self.image = cv2.imread(self.im_path)
         self.ui.listWidget.clear()
+        self.ui.heightLineEdit.setText(str(self.image.shape[0]))
+        self.ui.widthLineEdit.setText(str(self.image.shape[1]))
 
         if path.split(".")[-1] not in ["png", "jpg", "PNG", "JPG"]:
             self.error_message("Unsupported File Error",
@@ -214,13 +215,16 @@ class App(QtWidgets.QMainWindow):
 
     def revertButton_click(self):
         if self.image_exist:
-            self.image = cv2.imread(self.im_path)
-            pixmap = QPixmap(self.im_path)
-            width, height = self.scale_image(pixmap.width(), pixmap.height())
-            pixmap = pixmap.scaled(int(width), int(height))
-            self.ui.imageLabel.setPixmap(pixmap)
-            self.enable_disable_buttons()
-            self.set_default_sliders()
+            msg = QMessageBox.question(
+                self, 'Are you sure?', "This will undo all changes!", QMessageBox.Yes | QMessageBox.No)
+            if msg == QMessageBox.Yes:
+                self.image = cv2.imread(self.im_path)
+                pixmap = self.convert_to_pixmap(self.image, True)
+                self.ui.imageLabel.setPixmap(pixmap)
+                self.ui.listWidget.clear()
+                self.list_widget_initialize()
+                self.enable_disable_buttons()
+                self.set_default_sliders()
         else:
             self.error_message("No Image Found", "Try opening an image!")
 
@@ -239,11 +243,18 @@ class App(QtWidgets.QMainWindow):
         self.ui.brightnessValueLabel.setText(str(brightness))
         self.ui.contrastValueLabel.setText(str(contrast))
         self.image_enhancement = ImageEnhancement(self.image)
-        adjusted_image = self.image_enhancement.adjust_brightness_contrast(
+        self.manuel_enhan_image = self.image_enhancement.adjust_brightness_contrast(
             brightness, contrast)
-        self.image = adjusted_image
-        piximage = self.convert_to_pixmap(adjusted_image, True)
+        piximage = self.convert_to_pixmap(self.manuel_enhan_image, True)
         self.ui.imageLabel.setPixmap(piximage)
+
+    def applyManuelEnhancement_clicked(self):
+        self.image = self.manuel_enhan_image
+        pixmap = self.convert_to_pixmap(self.image, True)
+        self.ui.listWidget.clear()
+        self.list_widget_initialize()
+        self.ui.imageLabel.setPixmap(pixmap)
+        self.set_default_sliders()
 
     def flipVerticalButton_click(self):
         if self.image_exist:
@@ -258,7 +269,6 @@ class App(QtWidgets.QMainWindow):
 
         else:
             self.error_message("No Image Found", "Try opening an image!")
-
 
     def flipHorizontalButton_click(self):
         if self.image_exist:
@@ -287,7 +297,6 @@ class App(QtWidgets.QMainWindow):
 
         else:
             self.error_message("No Image Found", "Try opening an image!")
-
 
     def rotate90Button_click(self):
         if self.image_exist:
@@ -333,23 +342,44 @@ class App(QtWidgets.QMainWindow):
 
     def resizeButton_click(self):
         if self.image_exist:
-            self.basic_operations = BasicOperations(self.image)
-            self.resized = self.basic_operations.resize_image()
-            h, w, c = self.resized.shape
-            qimage = QImage(self.resized.data, w, h,
-                            c * w, QImage.Format_RGB888)
-            w, h = self.scale_image(qimage.width(), qimage.height())
-            qimage = qimage.scaled(int(w), int(h))
-            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
-
+            self.ui.resizeGroupBox.setVisible(True)
+            self.ui.rightToolsGroupBox.setDisabled(True)
+            self.ui.listWidget.setDisabled(True)
+            self.ui.menubar.setDisabled(True)
         else:
             self.error_message("No Image Found", "Try opening an image!")
 
-    #def histogram_click(self):
-        #if self.image_exist:
+    def resizeOk_click(self):
+        get_width = self.image.shape[1]
+        get_height = self.image.shape[0]
+        if len(self.ui.widthLineEdit.text()) == 0 and len(self.ui.heightLineEdit.text()) == 0:
+            self.error_message("Boxes are empty",
+                               "Don't leave blank both input boxes!")
+        else:
+            if len(self.ui.widthLineEdit.text()) != 0:
+                get_width = int(self.ui.widthLineEdit.text())
+            if len(self.ui.heightLineEdit.text()) != 0:
+                get_height = int(self.ui.heightLineEdit.text())
+        is_ratio = self.ui.resizeCheckBox.isChecked()
 
-        #else:
-            #self.error_message("No Image Found", "Try opening an image!")
+        #--- connection to resize operation ---#
+
+        #--------------------------------------#
+        self.resizeCancel_click()
+
+    def resizeCancel_click(self):
+        self.ui.resizeGroupBox.setVisible(False)
+        self.ui.rightToolsGroupBox.setDisabled(False)
+        self.ui.listWidget.setDisabled(False)
+        self.ui.menubar.setDisabled(False)
+        self.ui.heightLineEdit.setText(str(self.image.shape[0]))
+        self.ui.widthLineEdit.setText(str(self.image.shape[1]))
+
+    # def histogram_click(self):
+        # if self.image_exist:
+
+        # else:
+        # self.error_message("No Image Found", "Try opening an image!")
 
 
 if __name__ == "__main__":

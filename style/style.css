@@ -147,3 +147,10 @@ QMessageBox QLabel {
 QMessageBox QPushButton {
   padding: 5px 20px;
 }
+
+QLineEdit {
+  padding: 5px;
+  border: none;
+  background-color: #fff;
+  border-radius: 5px;
+}
