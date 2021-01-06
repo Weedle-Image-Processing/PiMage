@@ -16,7 +16,7 @@ class App(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_PiMage()
-        self.setFixedSize(982, 839)
+        self.setFixedSize(971, 714)
         self.ui.setupUi(self)
 
         self.image_exist = False
