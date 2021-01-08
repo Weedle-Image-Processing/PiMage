@@ -27,7 +27,7 @@ class App(QtWidgets.QMainWindow):
         self.ui.widthLineEdit.setValidator(QIntValidator())
         self.ui.heightLineEdit.setValidator(QIntValidator())
 
-        #--- connections ---#
+        # --- connections ---#
         self.ui.actionOpen.triggered.connect(self.open_image)
         self.ui.actionSave.triggered.connect(self.save_image)
         self.ui.actionSave_as.triggered.connect(self.save_as_image)
@@ -54,6 +54,8 @@ class App(QtWidgets.QMainWindow):
         self.ui.actionResize.triggered.connect(self.resizeButton_click)
         self.ui.resizeOkButton.clicked.connect(self.resizeOk_click)
         self.ui.resizeCancelButton.clicked.connect(self.resizeCancel_click)
+
+        # self.ui.actionCrop.triggered.connect(self.crop_click)
 
         # self.ui.histogramNormalButton.clicked.connect(self.histogram_click)
 
@@ -112,7 +114,7 @@ class App(QtWidgets.QMainWindow):
         if bgr2rgb:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         h, w, c = img.shape
-        piximage = QImage(img.data, w, h, c*w, QImage.Format_RGB888)
+        piximage = QImage(img.data, w, h, c * w, QImage.Format_RGB888)
         w, h = self.scale_image(piximage.width(), piximage.height())
         piximage = piximage.scaled(int(w), int(h))
         piximage = QPixmap.fromImage(piximage)
@@ -257,88 +259,40 @@ class App(QtWidgets.QMainWindow):
         self.set_default_sliders()
 
     def flipVerticalButton_click(self):
-        if self.image_exist:
-            self.basic_operations = BasicOperations(self.image)
-            self.new_image = self.basic_operations.flip_image_vertical()
-            h, w, c = self.new_image.shape
-            qimage = QImage(self.new_image.data, w, h,
-                            c*w, QImage.Format_RGB888)
-            w, h = self.scale_image(qimage.width(), qimage.height())
-            qimage = qimage.scaled(int(w), int(h))
-            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
-
-        else:
-            self.error_message("No Image Found", "Try opening an image!")
+        self.basic_operations = BasicOperations(self.image)
+        self.image = self.basic_operations.flip_image_vertical()
+        piximage = self.convert_to_pixmap(self.image, True)
+        self.ui.imageLabel.setPixmap(piximage)
 
     def flipHorizontalButton_click(self):
-        if self.image_exist:
-            self.basic_operations = BasicOperations(self.image)
-            self.new_image = self.basic_operations.flip_image_horizontal()
-            h, w, c = self.new_image.shape
-            qimage = QImage(self.new_image.data, w, h,
-                            c*w, QImage.Format_RGB888)
-            w, h = self.scale_image(qimage.width(), qimage.height())
-            qimage = qimage.scaled(int(w), int(h))
-            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
-
-        else:
-            self.error_message("No Image Found", "Try opening an image!")
+        self.basic_operations = BasicOperations(self.image)
+        self.image = self.basic_operations.flip_image_horizontal()
+        piximage = self.convert_to_pixmap(self.image, True)
+        self.ui.imageLabel.setPixmap(piximage)
 
     def flipVertHorButton_click(self):
-        if self.image_exist:
-            self.basic_operations = BasicOperations(self.image)
-            self.new_image = self.basic_operations.flip_image_horizontal_vertical()
-            h, w, c = self.new_image.shape
-            qimage = QImage(self.new_image.data, w, h,
-                            c*w, QImage.Format_RGB888)
-            w, h = self.scale_image(qimage.width(), qimage.height())
-            qimage = qimage.scaled(int(w), int(h))
-            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
-
-        else:
-            self.error_message("No Image Found", "Try opening an image!")
+        self.basic_operations = BasicOperations(self.image)
+        self.image = self.basic_operations.flip_image_horizontal_vertical()
+        piximage = self.convert_to_pixmap(self.image, True)
+        self.ui.imageLabel.setPixmap(piximage)
 
     def rotate90Button_click(self):
-        if self.image_exist:
-            self.basic_operations = BasicOperations(self.image)
-            self.new_image = self.basic_operations.rotate_image_90()
-            h, w, c = self.new_image.shape
-            qimage = QImage(self.new_image.data, w, h,
-                            c * w, QImage.Format_RGB888)
-            w, h = self.scale_image(qimage.width(), qimage.height())
-            qimage = qimage.scaled(int(w), int(h))
-            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
-
-        else:
-            self.error_message("No Image Found", "Try opening an image!")
+        self.basic_operations = BasicOperations(self.image)
+        self.image = self.basic_operations.rotate_image_90()
+        piximage = self.convert_to_pixmap(self.image, True)
+        self.ui.imageLabel.setPixmap(piximage)
 
     def rotate180Button_click(self):
-        if self.image_exist:
-            self.basic_operations = BasicOperations(self.image)
-            self.new_image = self.basic_operations.rotate_image_180()
-            h, w, c = self.new_image.shape
-            qimage = QImage(self.new_image.data, w, h,
-                            c * w, QImage.Format_RGB888)
-            w, h = self.scale_image(qimage.width(), qimage.height())
-            qimage = qimage.scaled(int(w), int(h))
-            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
-
-        else:
-            self.error_message("No Image Found", "Try opening an image!")
+        self.basic_operations = BasicOperations(self.image)
+        self.image = self.basic_operations.rotate_image_180()
+        piximage = self.convert_to_pixmap(self.image, True)
+        self.ui.imageLabel.setPixmap(piximage)
 
     def rotate270Button_click(self):
-        if self.image_exist:
-            self.basic_operations = BasicOperations(self.image)
-            self.new_image = self.basic_operations.rotate_image_270()
-            h, w, c = self.new_image.shape
-            qimage = QImage(self.new_image.data, w, h,
-                            c * w, QImage.Format_RGB888)
-            w, h = self.scale_image(qimage.width(), qimage.height())
-            qimage = qimage.scaled(int(w), int(h))
-            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
-
-        else:
-            self.error_message("No Image Found", "Try opening an image!")
+        self.basic_operations = BasicOperations(self.image)
+        self.image = self.basic_operations.rotate_image_270()
+        piximage = self.convert_to_pixmap(self.image, True)
+        self.ui.imageLabel.setPixmap(piximage)
 
     def resizeButton_click(self):
         if self.image_exist:
@@ -349,22 +303,32 @@ class App(QtWidgets.QMainWindow):
         else:
             self.error_message("No Image Found", "Try opening an image!")
 
+    # resize function - without keep aspect ratio
     def resizeOk_click(self):
         get_width = self.image.shape[1]
         get_height = self.image.shape[0]
         if len(self.ui.widthLineEdit.text()) == 0 and len(self.ui.heightLineEdit.text()) == 0:
             self.error_message("Boxes are empty",
                                "Don't leave blank both input boxes!")
+        elif int(self.ui.widthLineEdit.text()) == 0 or int(self.ui.heightLineEdit.text()) == 0:
+            self.error_message("Unvalided value",
+                               "Please, input value except 0!")
+        # elif int(self.ui.widthLineEdit.text()) > get_width or int(self.ui.heightLineEdit.text()) > get_height:
+        #   self.error_message("Values too high",
+        #                     "Please, input less than default value!")
+        elif int(self.ui.widthLineEdit.text()) < 0 or int(self.ui.heightLineEdit.text()) < 0:
+            self.error_message("Values too low",
+                               "Please, input bigger than 0!")
         else:
             if len(self.ui.widthLineEdit.text()) != 0:
                 get_width = int(self.ui.widthLineEdit.text())
             if len(self.ui.heightLineEdit.text()) != 0:
                 get_height = int(self.ui.heightLineEdit.text())
         is_ratio = self.ui.resizeCheckBox.isChecked()
-
-        #--- connection to resize operation ---#
-
-        #--------------------------------------#
+        self.basic_operations = BasicOperations(self.image)
+        self.image = self.basic_operations.resize_image(get_width, get_height)
+        piximage = self.convert_to_pixmap(self.image, True)
+        self.ui.imageLabel.setPixmap(piximage)
         self.resizeCancel_click()
 
     def resizeCancel_click(self):
@@ -376,10 +340,6 @@ class App(QtWidgets.QMainWindow):
         self.ui.widthLineEdit.setText(str(self.image.shape[1]))
 
     # def histogram_click(self):
-        # if self.image_exist:
-
-        # else:
-        # self.error_message("No Image Found", "Try opening an image!")
 
 
 if __name__ == "__main__":

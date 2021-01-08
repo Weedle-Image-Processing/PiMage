@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 
 
 class ImageEnhancement():
@@ -18,7 +17,6 @@ class ImageEnhancement():
             self.image, contrast, self.image, 0, brightness)
         return new_image
 
-    #def histogram(self):
+    # def histogram(self):
 
-
-    #--- New Functions can be added under here ---#
+    # --- New Functions can be added under here ---#
