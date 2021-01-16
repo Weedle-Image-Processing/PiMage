@@ -12,15 +12,15 @@ class EffectsFilters():
     def all_effects(self):
         black_and_white = self.black_and_white()
         watercolor = self.watercolor()
-        oil_painting = self.oil_painting()  # issue here !
+        painters_hand = self.painters_hand()  # issue here !
         pen_sketch_gray = self.pen_sketch_gray()
         pen_sketch_colored = self.pen_sketch_colored()
         sepia = self.sepia()
         gaussian_blur = self.gaussian_blur()
         median_blur = self.median_blur()
         emboss = self.emboss()
-        warm = self.warm_effect()
-        cool = self.cool_effect()
+        thermal = self.thermal_effect()
+        chilly = self.chilly_effect()
         edge_preserving = self.edge_preserving()
         sharpen = self.sharpen()
         images = {
@@ -28,13 +28,13 @@ class EffectsFilters():
             "Watercolor": watercolor,
             "Pen Skecth with Gray": pen_sketch_gray,
             "Pen Skecth with Color": pen_sketch_colored,
-            "Oil Painting": oil_painting,
+            "Painter's Hand": painters_hand,
             "Sepia": sepia,
             "Gaussian Blur": gaussian_blur,
             "Median Blur": median_blur,
             "Emboss": emboss,
-            "Warm": warm,
-            "Cool": cool,
+            "Thermal": thermal,
+            "Chilly": chilly,
             "Edge Preserving": edge_preserving,
             "Sharpen": sharpen
         }
@@ -48,7 +48,7 @@ class EffectsFilters():
         new_image = cv2.stylization(self.image, sigma_s=60, sigma_r=0.6)
         return new_image
 
-    def oil_painting(self):
+    def painters_hand(self):
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (6, 6))
         morph = cv2.morphologyEx(self.image, cv2.MORPH_OPEN, kernel)
         new_image = cv2.normalize(morph, None, 20, 255, cv2.NORM_MINMAX)
@@ -90,7 +90,7 @@ class EffectsFilters():
         spline = inter.UnivariateSpline(x, y)
         return spline(range(256))
 
-    def warm_effect(self):  # could be warm_effect ! there is an issue
+    def thermal_effect(self):  # could be warm_effect ! there is an issue
         decrease_table = self.spread_table(
             [0, 64, 128, 256], [0, 80, 160, 256])
         increase_table = self.spread_table(
@@ -103,7 +103,7 @@ class EffectsFilters():
         new_image = cv2.merge((red_channel, green_channel, blue_channel))
         return new_image
 
-    def cool_effect(self):  # could be cool_effect ! there is an issue
+    def chilly_effect(self):  # could be cool_effect ! there is an issue
         decrease_table = self.spread_table(
             [0, 64, 128, 256], [0, 80, 160, 256])
         increase_table = self.spread_table(

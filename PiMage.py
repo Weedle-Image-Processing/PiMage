@@ -23,9 +23,6 @@ class App(QtWidgets.QMainWindow):
 
         self.ui.listWidget.setSpacing(5)
         self.enable_disable_buttons()
-        self.ui.resizeGroupBox.setVisible(False)
-        self.ui.widthLineEdit.setValidator(QIntValidator())
-        self.ui.heightLineEdit.setValidator(QIntValidator())
 
         # --- connections ---#
         self.ui.actionOpen.triggered.connect(self.open_image)
@@ -50,10 +47,6 @@ class App(QtWidgets.QMainWindow):
         self.ui.action90.triggered.connect(self.rotate90Button_click)
         self.ui.action180.triggered.connect(self.rotate180Button_click)
         self.ui.action270.triggered.connect(self.rotate270Button_click)
-
-        self.ui.actionResize.triggered.connect(self.resizeButton_click)
-        self.ui.resizeOkButton.clicked.connect(self.resizeOk_click)
-        self.ui.resizeCancelButton.clicked.connect(self.resizeCancel_click)
 
         # self.ui.actionCrop.triggered.connect(self.crop_click)
 
@@ -129,8 +122,6 @@ class App(QtWidgets.QMainWindow):
         # self.image will be the last configurated image
         self.image = cv2.imread(self.im_path)
         self.ui.listWidget.clear()
-        self.ui.heightLineEdit.setText(str(self.image.shape[0]))
-        self.ui.widthLineEdit.setText(str(self.image.shape[1]))
 
         if path.split(".")[-1] not in ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"]:
             self.error_message("Unsupported File Error",
@@ -237,11 +228,12 @@ class App(QtWidgets.QMainWindow):
         self.image_enhancement = ImageEnhancement(self.image)
         self.image = self.image_enhancement.inverse_image()
         piximage = self.convert_to_pixmap(self.image, True)
+        self.list_widget_initialize()
         self.ui.imageLabel.setPixmap(piximage)
 
     def slider_events(self):
         brightness = self.ui.brightnessSlider.value()
-        contrast = self.ui.contrastSlider.value()
+        contrast = self.ui.contrastSlider.value() / 10
         self.ui.brightnessValueLabel.setText(str(brightness))
         self.ui.contrastValueLabel.setText(str(contrast))
         self.image_enhancement = ImageEnhancement(self.image)
@@ -294,61 +286,12 @@ class App(QtWidgets.QMainWindow):
         piximage = self.convert_to_pixmap(self.image, True)
         self.ui.imageLabel.setPixmap(piximage)
 
-    def resizeButton_click(self):
-        if self.image_exist:
-            self.ui.resizeGroupBox.setVisible(True)
-            self.ui.rightToolsGroupBox.setDisabled(True)
-            self.ui.listWidget.setDisabled(True)
-            self.ui.menubar.setDisabled(True)
-        else:
-            self.error_message("No Image Found", "Try opening an image!")
-
-    # resize function - without keep aspect ratio
-    def resizeOk_click(self):
-        get_width = self.image.shape[1]
-        get_height = self.image.shape[0]
-        if len(self.ui.widthLineEdit.text()) == 0 and len(self.ui.heightLineEdit.text()) == 0:
-            self.error_message("Boxes are empty",
-                               "Don't leave blank both input boxes!")
-        elif int(self.ui.widthLineEdit.text()) == 0 or int(self.ui.heightLineEdit.text()) == 0:
-            self.error_message("Unvalided value",
-                               "Please, input value except 0!")
-        # elif int(self.ui.widthLineEdit.text()) > get_width or int(self.ui.heightLineEdit.text()) > get_height:
-        #   self.error_message("Values too high",
-        #                     "Please, input less than default value!")
-        elif int(self.ui.widthLineEdit.text()) < 0 or int(self.ui.heightLineEdit.text()) < 0:
-            self.error_message("Values too low",
-                               "Please, input bigger than 0!")
-        else:
-            if len(self.ui.widthLineEdit.text()) != 0:
-                get_width = int(self.ui.widthLineEdit.text())
-            if len(self.ui.heightLineEdit.text()) != 0:
-                get_height = int(self.ui.heightLineEdit.text())
-        is_ratio = self.ui.resizeCheckBox.isChecked()
-        self.basic_operations = BasicOperations(self.image)
-        self.image = self.basic_operations.resize_image(get_width, get_height)
-        piximage = self.convert_to_pixmap(self.image, True)
-        self.ui.imageLabel.setPixmap(piximage)
-        self.resizeCancel_click()
-
-    def resizeCancel_click(self):
-        self.ui.resizeGroupBox.setVisible(False)
-        self.ui.rightToolsGroupBox.setDisabled(False)
-        self.ui.listWidget.setDisabled(False)
-        self.ui.menubar.setDisabled(False)
-        self.ui.heightLineEdit.setText(str(self.image.shape[0]))
-        self.ui.widthLineEdit.setText(str(self.image.shape[1]))
-
     def histogram_click(self):
         if self.image_exist:
             self.image_enhancement = ImageEnhancement(self.image)
-            self.new_image = self.image_enhancement.histogram()
-            h, w, c = self.new_image.shape
-            qimage = QImage(self.new_image.data, w, h,
-                            c * w, QImage.Format_BGR888)
-            w, h = self.scale_image(qimage.width(), qimage.height())
-            qimage = qimage.scaled(int(w), int(h))
-            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+            self.image = self.image_enhancement.histogram()
+            piximage = self.convert_to_pixmap(self.image, True)
+            self.ui.imageLabel.setPixmap(piximage)
         else:
             self.error_message("No Image Found", "Try opening an image!")
 
