@@ -57,7 +57,7 @@ class App(QtWidgets.QMainWindow):
 
         # self.ui.actionCrop.triggered.connect(self.crop_click)
 
-        # self.ui.histogramNormalButton.clicked.connect(self.histogram_click)
+        self.ui.histogramNormalButton.clicked.connect(self.histogram_click)
 
     def enable_disable_buttons(self):
         if not self.image_exist:
@@ -132,7 +132,7 @@ class App(QtWidgets.QMainWindow):
         self.ui.heightLineEdit.setText(str(self.image.shape[0]))
         self.ui.widthLineEdit.setText(str(self.image.shape[1]))
 
-        if path.split(".")[-1] not in ["png", "jpg", "PNG", "JPG"]:
+        if path.split(".")[-1] not in ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"]:
             self.error_message("Unsupported File Error",
                                "Unsupported file, file must be .jpg or .png")
         else:
@@ -339,7 +339,18 @@ class App(QtWidgets.QMainWindow):
         self.ui.heightLineEdit.setText(str(self.image.shape[0]))
         self.ui.widthLineEdit.setText(str(self.image.shape[1]))
 
-    # def histogram_click(self):
+    def histogram_click(self):
+        if self.image_exist:
+            self.image_enhancement = ImageEnhancement(self.image)
+            self.new_image = self.image_enhancement.histogram()
+            h, w, c = self.new_image.shape
+            qimage = QImage(self.new_image.data, w, h,
+                            c * w, QImage.Format_BGR888)
+            w, h = self.scale_image(qimage.width(), qimage.height())
+            qimage = qimage.scaled(int(w), int(h))
+            self.ui.imageLabel.setPixmap(QPixmap.fromImage(qimage))
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
 
 
 if __name__ == "__main__":
