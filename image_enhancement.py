@@ -36,4 +36,16 @@ class ImageEnhancement():
         img_new = np.reshape(img_new, img.shape)
         return img_new
 
+    # Contrast Limited Adaptive Histogram Equalization
+    def CLAHE(self):
+        # Converting the image to YCrCb
+        image_yuv = cv2.cvtColor(self.image, cv2.COLOR_BGR2YUV)
+        # Creating CLAHE
+        clahe = cv2.createCLAHE(clipLimit=2, tileGridSize=(8, 8))
+        # Applying Histogram Equalization on the original imageof the Y channel
+        image_yuv[:, :, 0] = clahe.apply(image_yuv[:, :, 0])
+        # convert the YUV image back to RGB format
+        image_c_clahe = cv2.cvtColor(image_yuv, cv2.COLOR_YUV2BGR)
+        return image_c_clahe
+
     # --- New Functions can be added under here ---#

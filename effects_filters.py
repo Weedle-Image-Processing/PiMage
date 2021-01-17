@@ -15,26 +15,43 @@ class EffectsFilters():
         summer_sunset = self.summer_sunset()
         toony = self.toony()
         cyberpunk_neon = self.cyberpunk_neon()
-        gaussian_blur = self.gaussian_blur()
-        median_blur = self.median_blur()
-        emboss = self.emboss()
         thermal = self.thermal_effect()
         chilly = self.chilly_effect()
-        edge_preserving = self.edge_preserving()
-        sharpen = self.sharpen()
+        hot_pepper = self.hot_pepper()
+        sandstorm=self.sandstorm()
+        darkness=self.darkness()
+        firestorm=self.firestorm()
+        sunshine_cartoon=self.sunshine_cartoon()
+        snow=self.snow()
+        salt_and_pepper = self.salt_and_pepper()
+        gray_nostalgia=self.gray_nostalgia()
+        ghost=self.ghost()
+        pastel=self.pastel()
+        ice_blue=self.ice_blue()
+        winter_time = self.winter_time()
+        sweet_dreams = self.sweet_dreams()
+
         images = {
             "Pink Dream": pink_dream,
             "Painter's Hand": painters_hand,
             "Summer Sunset": summer_sunset,
             "Toony": toony,
             "Cyberpunk Neon": cyberpunk_neon,
-            "Gaussian Blur": gaussian_blur,
-            "Median Blur": median_blur,
-            "Emboss": emboss,
+            "Sweet Dreams": sweet_dreams,
             "Thermal": thermal,
             "Chilly": chilly,
-            "Edge Preserving": edge_preserving,
-            "Sharpen": sharpen,
+            "Hot Pepper ": hot_pepper,
+            "Salt and Pepper": salt_and_pepper,
+            "Gray Nostalgia": gray_nostalgia,
+            "Sandstorm": sandstorm,
+            "Ghost": ghost,
+            "Darkness": darkness,
+            "Pastel": pastel,
+            "Ice Blue": ice_blue,
+            "Firestorm": firestorm,
+            "Sunshine Cartoon": sunshine_cartoon,
+            "Winter Time": winter_time,
+            "Snow": snow,
         }
         return images
 
@@ -73,17 +90,10 @@ class EffectsFilters():
             new_image, flags=1, sigma_s=60, sigma_r=0.4)
         return new_image
 
-    def gaussian_blur(self):
-        new_image = cv2.GaussianBlur(self.image, (35, 35), 0)
-        return new_image
-
-    def median_blur(self):
-        new_image = cv2.medianBlur(self.image, 41)
-        return new_image
-
-    def emboss(self):
-        kernel = np.array([[0, -1, -1], [1, 0, -1], [1, 1, 0]])
-        new_image = cv2.filter2D(self.image, -1, kernel)
+    def sweet_dreams(self):
+        new_image = cv2.applyColorMap(self.image, cv2.COLORMAP_TWILIGHT_SHIFTED)
+        new_image = cv2.edgePreservingFilter(
+            new_image, flags=1, sigma_s=40, sigma_r=0.6)
         return new_image
 
     # using this method in warm, cool effects
@@ -117,13 +127,87 @@ class EffectsFilters():
         new_image = cv2.merge((red_channel, green_channel, blue_channel))
         return new_image
 
-    def edge_preserving(self):
-        new_image = cv2.edgePreservingFilter(
-            self.image, flags=1, sigma_s=60, sigma_r=0.4)
+    def hot_pepper(self):
+        # new_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        morph = cv2.morphologyEx(self.image, cv2.MORPH_OPEN, kernel)
+        new_image = cv2.normalize(morph, None, 20, 255, cv2.NORM_MINMAX)
+        new_image = cv2.applyColorMap(new_image, cv2.COLORMAP_HOT)
         return new_image
 
-    def sharpen(self):
-        new_image = cv2.detailEnhance(self.image, sigma_s=10, sigma_r=0.15)
+    def salt_and_pepper(self):
+        new_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        (thresh, new_image) = cv2.threshold(new_image, 127, 255, cv2.THRESH_BINARY)
+        return new_image
+
+    def gray_nostalgia(self):
+        mask_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        mask_image = cv2.medianBlur(mask_image, 3)
+        new_image = cv2.applyColorMap(mask_image, cv2.COLORMAP_BONE)
+        return new_image
+
+    def sandstorm(self):
+        new_image = cv2.applyColorMap(self.image, cv2.COLORMAP_PLASMA)
+        kernel = np.array([[0.272, 0.321, 0.141],
+                           [0.359, 0.686, 0.128],
+                           [0.885, 0.669, 0.149]])
+        new_image = cv2.transform(new_image, kernel)
+        new_image[np.where(new_image > 255)] = 255  # normalizing
+        return new_image
+
+    def ghost(self):
+        kernel = np.array([[0, -1, -1], [1, 0, -1], [1, 4, 0]])
+        new_image = cv2.filter2D(self.image, -1, kernel)
+        new_image = cv2.applyColorMap(new_image, cv2.COLORMAP_DEEPGREEN)
+        return new_image
+
+    def snow(self):
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        gray_blur = cv2.GaussianBlur(gray, (25, 25), 0)
+        image = cv2.divide(gray, gray_blur, scale=250.0)
+        return image
+
+
+    def pastel(self):
+        new_image = cv2.medianBlur(self.image, 5)
+        new_image = cv2.applyColorMap(new_image, cv2.COLORMAP_JET)
+        return new_image
+
+
+    def ice_blue(self):
+        new_image = cv2.applyColorMap(self.image, cv2.COLORMAP_OCEAN)
+        new_image = cv2.edgePreservingFilter(
+            new_image, flags=1, sigma_s=70, sigma_r=0.5)
+        return new_image
+
+    def firestorm(self):
+        new_image = cv2.applyColorMap(self.image, cv2.COLORMAP_PARULA)
+        new_image = cv2.bitwise_not(new_image)
+        return new_image
+
+    def sunshine_cartoon(self):
+        new_image = cv2.applyColorMap(self.image, cv2.COLORMAP_INFERNO)
+        kernel = np.array([[2, -7, -5], [3, 4, -8], [2, 4, 6]])
+        new_image = cv2.filter2D(new_image, -1, kernel)
+        return new_image
+
+    def winter_time(self):
+        kernel = np.array([[0.868, 0.100, 0.553],
+                           [0.545, 0.100, 0.734],
+                           [0.546, 0.100, 0.453]])
+        new_image = cv2.transform(self.image, kernel)
+        colors = cv2.bilateralFilter(new_image, 1, 1, 1)
+        mask_image = cv2.cvtColor(new_image, cv2.COLOR_BGR2GRAY)
+        mask_image = cv2.medianBlur(mask_image, 1)
+        new_image = cv2.bitwise_and(colors, colors, mask=mask_image)
+        return new_image
+
+    def darkness(self):
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        gray_blur = cv2.GaussianBlur(gray, (25, 25), 0)
+        image = cv2.divide(gray, gray_blur, scale=250.0)
+        new_image = cv2.bitwise_not(image)
         return new_image
 
     #--- New Functions can be added under here ---#
+

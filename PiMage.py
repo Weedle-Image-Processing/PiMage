@@ -53,6 +53,8 @@ class App(QtWidgets.QMainWindow):
         # self.ui.actionCrop.triggered.connect(self.crop_click)
 
         self.ui.histogramNormalButton.clicked.connect(self.histogram_click)
+        self.ui.contrastEnhancementButton.clicked.connect(self.CLAHE_click)
+
 
     def enable_disable_buttons(self):
         if not self.image_exist:
@@ -291,6 +293,16 @@ class App(QtWidgets.QMainWindow):
         if self.image_exist:
             self.image_enhancement = ImageEnhancement(self.image)
             self.image = self.image_enhancement.histogram()
+            piximage = self.convert_to_pixmap(self.image, True)
+            self.ui.imageLabel.setPixmap(piximage)
+        else:
+            self.error_message("No Image Found", "Try opening an image!")
+
+    # Contrast Limited Adaptive Histogram Equalization
+    def CLAHE_click(self):
+        if self.image_exist:
+            self.image_enhancement = ImageEnhancement(self.image)
+            self.image = self.image_enhancement.CLAHE()
             piximage = self.convert_to_pixmap(self.image, True)
             self.ui.imageLabel.setPixmap(piximage)
         else:
