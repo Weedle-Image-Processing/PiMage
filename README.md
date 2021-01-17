@@ -1,7 +1,9 @@
-<img alt="PiMageIcon0" src="./GUI/pimage_0.png" width=100>
-<img alt="PiMageIcon1" src="./GUI/pimage_1.png" width=100>
-<img alt="PiMageIcon2" src="./GUI/pimage_2.png" width=100> </br>
-
+<p float="left">
+  <img alt="PiMageIcon0" src="./GUI/pimage_0.png" width=100 />
+  <img alt="PiMageIcon1" src="./GUI/pimage_1.png" width=100 />
+  <img alt="PiMageIcon2" src="./GUI/pimage_2.png" width=100 />
+</p>
+</br>
 # PiMage
 
 Image Editing Tool with Python and PyQt5
