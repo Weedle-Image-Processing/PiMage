@@ -18,6 +18,8 @@ class App(QtWidgets.QMainWindow):
         self.ui = Ui_PiMage()
         self.setFixedSize(971, 714)
         self.ui.setupUi(self)
+        self.setWindowIcon(QtGui.QIcon(os.path.abspath(
+            os.path.join("GUI", "pimage_0.png"))))
 
         self.image_exist = False
 
@@ -82,7 +84,7 @@ class App(QtWidgets.QMainWindow):
 
     def set_default_sliders(self):
         self.ui.brightnessSlider.setValue(0)
-        self.ui.contrastSlider.setValue(1)
+        self.ui.contrastSlider.setValue(10)
 
     def error_message(self, title, msg):
         msgbox = QMessageBox()
@@ -154,7 +156,7 @@ class App(QtWidgets.QMainWindow):
     def save_as_image(self):
         if self.image_exist:
             image_path, _ = QFileDialog.getSaveFileName()
-            if not image_path.endswith("png") or not image_path.endswith("jpg"):
+            if not image_path.endswith(".png") or not image_path.endswith(".jpg"):
                 image_path = image_path + ".png"
             try:
                 cv2.imwrite(image_path, self.image)
@@ -228,7 +230,6 @@ class App(QtWidgets.QMainWindow):
         self.image_enhancement = ImageEnhancement(self.image)
         self.image = self.image_enhancement.inverse_image()
         piximage = self.convert_to_pixmap(self.image, True)
-        self.list_widget_initialize()
         self.ui.imageLabel.setPixmap(piximage)
 
     def slider_events(self):
