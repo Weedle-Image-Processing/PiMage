@@ -1,5 +1,5 @@
-# PiMage
 ![PiMageIcon2](./GUI/pimage_1.png)
+# PiMage
 Image Editing Tool with Python and PyQt5
 
 # Tutorial
