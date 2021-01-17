@@ -1,4 +1,5 @@
 PyQt5==5.15.2
-Scipy==1.6.0
-Numpy==1.19.3
-Opencv==4.4.0
+scipy==1.6.0
+numpy==1.19.3
+opencv-python==4.4.0
+qcrop==0.0.1

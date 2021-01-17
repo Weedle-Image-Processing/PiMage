@@ -19,6 +19,7 @@ PyQt5 version = 5.15.2
 Scipy version = 1.6.0
 Numpy version = 1.19.3
 Opencv version = 4.4.0
+QCrop version = 0.0.1
 ```
 
 To run this app:

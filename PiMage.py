@@ -6,6 +6,8 @@ from GUI import Ui_PiMage
 from effects_filters import EffectsFilters
 from image_enhancement import ImageEnhancement
 from basic_operations import BasicOperations
+from qcrop.ui import QCrop
+import numpy as np
 import cv2
 import sys
 import os
@@ -40,6 +42,7 @@ class App(QtWidgets.QMainWindow):
         self.ui.contrastSlider.valueChanged.connect(self.slider_events)
         self.ui.brightnessSlider.valueChanged.connect(self.slider_events)
 
+        self.ui.actionCrop.triggered.connect(self.crop_image)
         self.ui.actionVertical.triggered.connect(self.flipVerticalButton_click)
         self.ui.actionHorizontal.triggered.connect(
             self.flipHorizontalButton_click)
@@ -54,7 +57,6 @@ class App(QtWidgets.QMainWindow):
 
         self.ui.histogramNormalButton.clicked.connect(self.histogram_click)
         self.ui.contrastEnhancementButton.clicked.connect(self.CLAHE_click)
-
 
     def enable_disable_buttons(self):
         if not self.image_exist:
@@ -252,6 +254,27 @@ class App(QtWidgets.QMainWindow):
         self.list_widget_initialize()
         self.ui.imageLabel.setPixmap(pixmap)
         self.set_default_sliders()
+
+    def crop_image(self):
+        piximage = self.convert_to_pixmap(self.image, True)
+        crop_tool = QCrop(piximage)
+        status = crop_tool.exec()
+        if status == 1:
+            cropped_image = crop_tool.image
+        else:
+            return
+        if os.path.exists("./temp.png"):
+            os.remove("./temp.png")
+        cropped_image.save("./temp.png")
+        self.image = cv2.imread("./temp.png")
+        if os.path.exists("./temp.png"):
+            os.remove("./temp.png")
+        width, height = self.scale_image(
+            cropped_image.width(), cropped_image.height())
+        cropped_image = cropped_image.scaled(int(width), int(height))
+        self.ui.listWidget.clear()
+        self.list_widget_initialize()
+        self.ui.imageLabel.setPixmap(cropped_image)
 
     def flipVerticalButton_click(self):
         self.basic_operations = BasicOperations(self.image)

@@ -18,16 +18,16 @@ class EffectsFilters():
         thermal = self.thermal_effect()
         chilly = self.chilly_effect()
         hot_pepper = self.hot_pepper()
-        sandstorm=self.sandstorm()
-        darkness=self.darkness()
-        firestorm=self.firestorm()
-        sunshine_cartoon=self.sunshine_cartoon()
-        snow=self.snow()
+        sandstorm = self.sandstorm()
+        darkness = self.darkness()
+        firestorm = self.firestorm()
+        sunshine_cartoon = self.sunshine_cartoon()
+        snow = self.snow()
         salt_and_pepper = self.salt_and_pepper()
-        gray_nostalgia=self.gray_nostalgia()
-        ghost=self.ghost()
-        pastel=self.pastel()
-        ice_blue=self.ice_blue()
+        gray_nostalgia = self.gray_nostalgia()
+        ghost = self.ghost()
+        pastel = self.pastel()
+        ice_blue = self.ice_blue()
         winter_time = self.winter_time()
         sweet_dreams = self.sweet_dreams()
 
@@ -76,12 +76,13 @@ class EffectsFilters():
         return new_image
 
     def toony(self):
-        colors = cv2.bilateralFilter(self.image, 9, 300, 300)
-        mask_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        mask_image = cv2.medianBlur(mask_image, 5)
-        mask_image = cv2.adaptiveThreshold(
-            mask_image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 9)
-        new_image = cv2.bitwise_and(colors, colors, mask=mask_image)
+        color = cv2.bilateralFilter(
+            self.image, d=9, sigmaColor=200, sigmaSpace=200)
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        gray_1 = cv2.medianBlur(gray, 5)
+        edges = cv2.adaptiveThreshold(
+            gray_1, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 5)
+        new_image = cv2.bitwise_and(color, color, mask=edges)
         return new_image
 
     def cyberpunk_neon(self):
@@ -91,7 +92,8 @@ class EffectsFilters():
         return new_image
 
     def sweet_dreams(self):
-        new_image = cv2.applyColorMap(self.image, cv2.COLORMAP_TWILIGHT_SHIFTED)
+        new_image = cv2.applyColorMap(
+            self.image, cv2.COLORMAP_TWILIGHT_SHIFTED)
         new_image = cv2.edgePreservingFilter(
             new_image, flags=1, sigma_s=40, sigma_r=0.6)
         return new_image
@@ -137,7 +139,8 @@ class EffectsFilters():
 
     def salt_and_pepper(self):
         new_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        (thresh, new_image) = cv2.threshold(new_image, 127, 255, cv2.THRESH_BINARY)
+        (thresh, new_image) = cv2.threshold(
+            new_image, 127, 255, cv2.THRESH_BINARY)
         return new_image
 
     def gray_nostalgia(self):
@@ -167,12 +170,10 @@ class EffectsFilters():
         image = cv2.divide(gray, gray_blur, scale=250.0)
         return image
 
-
     def pastel(self):
         new_image = cv2.medianBlur(self.image, 5)
         new_image = cv2.applyColorMap(new_image, cv2.COLORMAP_JET)
         return new_image
-
 
     def ice_blue(self):
         new_image = cv2.applyColorMap(self.image, cv2.COLORMAP_OCEAN)
@@ -210,4 +211,3 @@ class EffectsFilters():
         return new_image
 
     #--- New Functions can be added under here ---#
-

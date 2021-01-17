@@ -34,7 +34,4 @@ class BasicOperations():
         new_image = cv2.flip(self.image, -1)
         return new_image
 
-    # crop function
-    # def crop(self):
-
     # --- New Functions can be added under here ---#
