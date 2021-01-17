@@ -1,4 +1,6 @@
-![PiMageIcon1](./GUI/pimage_1.png)
+<img alt="PiMageIcon0" src="./GUI/pimage_0.png" width=100>
+<img alt="PiMageIcon1" src="./GUI/pimage_1.png" width=500>
+<img alt="PiMageIcon2" src="./GUI/pimage_2.png" width=100>
 # PiMage
 Image Editing Tool with Python and PyQt5
 
@@ -23,5 +25,3 @@ python PiMage.py
 # Screenshot
 
 ![PiMage](./GUI/gui.png)
-<img alt="PiMageIcon0" src="./GUI/pimage_0.png" width=100>
-<img alt="PiMageIcon2" src="./GUI/pimage_2.png" width=100>
