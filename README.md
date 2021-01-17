@@ -1,8 +1,12 @@
+<p float="left">
+  <img alt="PiMageIcon0" src="./GUI/pimage_0.png" width=100 />
+  <img alt="PiMageIcon1" src="./GUI/pimage_1.png" width=350 />
+  <img alt="PiMageIcon2" src="./GUI/pimage_2.png" width=100 />
+</p>
+</br>
+
 # PiMage
 
-![PiMageIcon](./GUI/pimage_0.png)
-![PiMageIcon2](./GUI/pimage_1.png)
-![PiMageIcon3](./GUI/pimage_2.png)
 Image Editing Tool with Python and PyQt5
 
 # Tutorial
