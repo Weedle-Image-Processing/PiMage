@@ -127,6 +127,7 @@ class App(QtWidgets.QMainWindow):
         self.im_path = path  # self.im_path is our original image path
         # self.image will be the last configurated image
         self.image = cv2.imread(self.im_path)
+        self.manuel_enhan_image = self.image
         self.ui.listWidget.clear()
 
         if path.split(".")[-1] not in ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"]:
